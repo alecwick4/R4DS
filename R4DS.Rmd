@@ -1725,6 +1725,7 @@ ggplot(diamonds,aes(x=price,y=after_stat(density)))+
   geom_freqpoly(aes(color=cut),binwidth=500,linewidth=0.75)
 
 q94<-"The violin plot is great for seeing distribution shape but lacks median or percentile markings. The faceted histogram is create to compare grouops but struggles when a particular group has a few number of values. The two frequency plots are create for comparising distribution shape and density but lacks the ability to see groupings."
+
 ```
 
 ```{r}
