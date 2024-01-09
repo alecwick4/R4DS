@@ -1704,6 +1704,7 @@ ggplot(diamonds,aes(x=fct_reorder(cut,price,median),y=price))+
   coord_flip()
 
 q93<-"I learned from the letter value plot that box plots often do not tell the full story of the data. In this example, the cuts have a lot of outliers. By using the letter value plot, it's much easier to see the distribution of the price among the various cut categories. To interpret this viaual, one must understand that each letter represents a percentile range that decreases by half for each letter when starting from the center. As you can see, the majority of diamonds are under $2,500."
+
 ```
 
 ```{r}
