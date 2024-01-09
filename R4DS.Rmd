@@ -12,6 +12,8 @@ library(tidyverse)
 library(palmerpenguins)
 library(ggthemes)
 library(ggplot2)
+library(lvplot)
+library(ggbeeswarm)
 ```
 
 ```{r}
@@ -1690,6 +1692,7 @@ q92<-"It appears that the coord_flip() function performs the same action as swit
 ```
 
 ```{r}
+library(ggplot2)
 # Question 93
 library(lvplot)
 ggplot(diamonds,aes(x=fct_reorder(cut,price,median),y=price))+
@@ -1732,8 +1735,5 @@ library(ggbeeswarm)
  q95<-"The two main functions of ggbeeswarm are geom_swarm and quasirandom. ggbeeswarm aligns the points in a violin shape while the quasirandom function shows the points in a violin shape along with added randomness."
 ```
 
-```{r}
 
- Test
-```
 
