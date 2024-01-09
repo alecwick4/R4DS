@@ -1,0 +1,1734 @@
+---
+title: "R for Data Science"
+author: "Alec Wick"
+output: html_notebook
+---
+
+## Part 1: Whole Game 
+# Chapter 1: Visualization
+```{r}
+#Loading needed libraries
+library(tidyverse)
+library(palmerpenguins)
+library(ggthemes)
+library(ggplot2)
+```
+
+```{r}
+#Different ways to view tibble data
+penguins
+glimpse(penguins)
+View(penguins)
+?penguins
+```
+
+```{r}
+# plotting
+ggplot(data=penguins, mapping = aes(x=flipper_length_mm,y=body_mass_g)) +
+  geom_point(mapping = aes(color=species,shape=species)) +
+  geom_smooth(method = "lm")+
+  labs(title="Body mass and flipper length",
+       subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins",
+       x = "Flipper length (mm)", y="Body mass (g)",
+       color="Species",shape="Species")+
+  scale_color_colorblind()
+```
+
+#Exercise 1
+```{r}
+#Question 1
+nrow(penguins)
+ncol(penguins)
+q1="There are 344 rows and 8 columns within the penguins dataset"
+```
+
+```{r}
+#Question 2
+?penguins
+q2="The bill depth is the length from the top of the culmen bill to the bottom of the culmen bill."
+```
+
+```{r}
+#Question 3
+ggplot(data = penguins,mapping = aes(x=bill_length_mm,y=bill_depth_mm))+
+  geom_point()
+q3="There appears to be three large cluster groupings of observations between bill depth and bill length. A significant linear trend between the observaions does not appear to exist."
+```
+
+```{r}
+#Question 4
+ggplot(data = penguins,mapping = aes(x=species,y=bill_depth_mm))+ geom_boxplot()
+q4="If I use species within a scatterplot, the obervations will be split into three lines assoicated with each species. A more appropreite geom is the boxplot since it's much easier to see the distribtions of the obersations."
+```
+
+```{r}
+#Question 5
+q5="The code has an error since no mapping arguments have been assigned. In order to resolve the issue, we need to adding mapping arguments such as aes(x=bill_length_mm,y=bill_depth_mm)"
+```
+
+```{r}
+#Question 6
+ggplot(data = penguins,mapping = aes(x=bill_length_mm,y=bill_depth_mm))+
+  geom_point(na.rm = TRUE)
+q6="The na.rm argument removes null values from the plot. By default, the argument is set to FALSE."
+
+```
+
+```{r}
+#Question 7
+ggplot(data=penguins, mapping = aes(x=flipper_length_mm,y=body_mass_g)) +
+  geom_point(mapping = aes(color=species,shape=species)) +
+  geom_smooth(method = "lm")+
+  labs(title="Body mass and flipper length",
+       subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins",
+       x = "Flipper length (mm)", y="Body mass (g)",
+       color="Species",shape="Species",caption = "Data comes from the palmerpenguins package")+
+  scale_color_colorblind()
+```
+
+```{r}
+#Question 8
+ggplot(data=penguins, mapping = aes(x=flipper_length_mm,y=body_mass_g)) +
+  geom_point(mapping = aes(color=bill_depth_mm)) +
+  geom_smooth()+
+  labs(title="Body mass and flipper length",
+       subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins",
+       x = "Flipper length (mm)", y="Body mass (g)",
+       color="Species",shape="Species",caption = "Data comes from the palmerpenguins package")
+```
+
+```{r}
+#Question 9
+ggplot(data=penguins,mapping=aes(x=flipper_length_mm,y=body_mass_g,color=island))+
+  geom_point()+
+  geom_smooth(se=FALSE)
+```
+
+```{r}
+#Question 10
+ggplot(data = penguins,mapping=aes(x=flipper_length_mm,y=body_mass_g))+
+  geom_point()+
+  geom_smooth(se=FALSE)
+
+ggplot()+geom_point(data = penguins,mapping=aes(x=flipper_length_mm,y=body_mass_g))+geom_smooth(data=penguins,mapping=aes(x=flipper_length_mm,y=body_mass_g))
+
+q10="These plots will look very similar but the first one will not have a confidence range displayed."
+```
+
+```{r}
+#Remove data and mapping text
+ggplot(penguins,aes(x=flipper_length_mm,y=body_mass_g))+geom_point()
+```
+
+```{r}
+#Piping
+penguins |>
+  ggplot(aes(x=flipper_length_mm,y=body_mass_g)) +
+  geom_point()
+```
+
+```{r}
+#Categorical Variables
+ggplot(penguins,aes(x=species))+geom_bar()
+```
+
+```{r}
+#Ordering factor
+ggplot(penguins,aes(x=fct_infreq(species)))+geom_bar()
+```
+
+```{r}
+#Histogram
+ggplot(penguins,aes(x=body_mass_g))+geom_histogram(binwidth = 200)
+```
+
+```{r}
+ggplot(penguins,aes(x=body_mass_g))+geom_density()
+```
+
+```{r}
+# Question 11
+ggplot(penguins,aes(y=species))+geom_bar()
+q11="The penguin categories are rotated horizontally when using the y aesthetic."
+```
+
+```{r}
+# Question 12
+ggplot(penguins,aes(x=species))+geom_bar(fill="red")
+q12="The difference between the two plots is that the fill argument changes the bar graph color while the color changes the bar graph border color."
+```
+
+```{r}
+# Question 13
+q13="The bins argument determines the number of buckets the histogram will use."
+```
+
+```{r}
+# Question 14
+head(diamonds)
+ggplot(diamonds,aes(x=carat))+geom_histogram(bins = 15)
+q14="I believe the bin size with 15 groupings is the most interesting since we're able to clearly see the distribution."
+```
+
+```{r}
+#Boxplot
+ggplot(penguins,aes(x=species,y=body_mass_g))+geom_boxplot()
+
+#Density Plot
+ggplot(penguins,aes(x=body_mass_g,color=species,fill=species))+geom_density(alpha=.5)
+```
+
+```{r}
+#Category vs Category
+ggplot(penguins,aes(x=island,fill=species))+geom_bar()
+
+ggplot(penguins,aes(x=island,fill=species))+geom_bar(position = "fill")
+```
+
+```{r}
+#Three or More Variables
+ggplot(penguins,aes(x=flipper_length_mm,y=body_mass_g))+
+  geom_point(aes(color=species,shape=island))+
+  facet_wrap(~island)
+```
+
+```{r}
+# Question 15
+head(mpg)
+q15="manufacturer=categorical, model=categorical, displ=numerical,year=categorical,cyl=categorical,trans=categorical,drv=categorical, cty=numerical, hwy=numerical... I am able to determine these categories by looking at the number of occurancies and background information."
+```
+
+```{r}
+# Question 16
+ggplot(mpg,aes(x=hwy,y=displ,size=cty,color=cty,linewidth=cty))+geom_point()
+q16="For numerical values a scale is introduced and for categorical values a new color is used for each grouping."
+```
+
+```{r}
+# Question 17
+q17="There is no change since line width does not affect a scatter plot"
+```
+
+```{r}
+# Question 18
+q18="A variable can be used in several asethetics within visualization. If this occurs, each asethetics will be affested accordingly."
+```
+
+```{r}
+# Question 19
+ggplot(data=penguins,mapping = aes(x=bill_length_mm,y=bill_depth_mm,color=species,shape=species))+geom_point()
+q19="In order to fix this problem, the arguments within the geom_point function need to be removed."
+```
+
+```{r}
+# Question 20
+ggplot(penguins,aes(x=island,fill=species))+
+  geom_bar(position="fill")
+ggplot(penguins,aes(x=species,fill=island))+
+  geom_bar(position="fill")
+q20="plot 1 shows the distribution of species on each island while plot 2 shows the distribution of each species with each of the islands."
+```
+
+```{r}
+#ggsave
+ggplot(penguins,aes(x=flipper_length_mm,y=body_mass_g))+geom_point()
+ggsave(filename="penguin-plot.png")
+```
+
+```{r}
+# Question 21
+ggplot(mpg,aes(x=class))+
+  geom_bar()
+ggplot(mpg,aes(x=cty,y=hwy))+
+  geom_point()
+ggsave("mpg-plot.pdf")
+
+q21="The second plot is saved since the ggsave function was run after the second set of plotting code."
+```
+
+```{r}
+# Question 22
+q22="To save the plot as a pdf, the file extension would need to be updated to .pdf instead of .png"
+```
+
+# Chapter 2: Workflow Basics
+```{r}
+#Vector
+primes <- c(2,3,5,7,11,13)
+primes*2
+this_is_a_really_long_name<-2.5
+```
+
+```{r}
+seq(1,10)
+x<-"hello world"
+```
+
+```{r}
+# Question 23
+q23<-"The code does not work because the variable is misspelled"
+```
+
+```{r}
+# Question 24
+# library(tidyverse)
+# ggplot(dTA,aes(x=displ,y=hwy))+
+#   geom_point()+
+#   geom_smooth(method="lm")
+```
+
+```{r}
+# Question 25
+q25<-"option shift k displays RStudio shortcuts. This can also be viewed from the help menu."
+```
+
+```{r}
+# Question 26
+q26<-"The second plot is saved this time since the plot argument specifies the first graph."
+```
+
+# Chapter 3: Data Transformation
+```{r}
+library(nycflights13)
+library(tidyverse)
+```
+
+```{r}
+flights
+
+#Use view to see an entier tibble
+View(flights)
+
+#Use to see all columns
+glimpse(flights)
+```
+
+```{r}
+#Filter
+flights |>
+  filter(dest=="IAH") |>
+  group_by(year,month,day) |>
+  summarise(
+    arr_delay = mean(arr_delay,na.rm = TRUE)
+  )
+
+flights |>
+  filter(dep_delay>120)
+
+jan1<-flights |>
+  filter(month ==1 & day==1)
+
+flights |>
+  filter(month ==1 | month==2)
+
+flights |>
+  filter(month %in% c(1,2))
+
+flights |>
+  filter(month==1)
+
+```
+
+```{r}
+#Arrange
+flights |>
+  arrange(year,month,day,desc(dep_time))
+```
+
+```{r}
+#Distinct
+flights |>
+  distinct(origin,dest,.keep_all = TRUE)
+```
+
+```{r}
+flights |>
+  count(origin,dest,sort=TRUE)
+
+table(flights$carrier)
+```
+
+```{r}
+# Question 27
+flights |>
+  filter(arr_delay>=120)
+
+flights |>
+  filter(dest %in% c('IAH','HOU'))
+
+flights |>
+  filter(carrier %in% c('UA','DL'))
+
+flights |>
+  filter(month %in% c(7,8,9))
+
+flights |>
+  filter(dep_delay<=0 & arr_delay>=120)
+
+flights |>
+  filter(dep_delay>=60 & arr_delay <=30)
+
+```
+
+```{r}
+# Question 28
+flights |>
+  arrange(desc(dep_delay))
+
+flights |>
+  arrange(desc(dep_delay))
+
+flights |>
+  arrange(dep_time)
+```
+
+```{r}
+# Question 29
+flights |>
+  arrange(air_time)
+```
+
+```{r}
+# Question 30 
+q30<-"Yes"
+flights |>
+  distinct(month,day,.keep_all = TRUE)
+```
+
+```{r}
+# Question 31
+flights |>
+  arrange(desc(distance))
+```
+
+```{r}
+# Question 32
+q32<-"It's important to filter the data first and then perform any arrangements. Removing unneeded data will allow the arrange function to complete must faster since there is less data to evaluate."
+```
+
+```{r}
+# Mutate
+flights |>
+  mutate(
+    gain = dep_delay - arr_delay,
+    speed = distance / air_time * 60,
+    .before = 2
+  )
+```
+
+```{r}
+# Mutate
+flights |>
+  mutate(
+    gain = dep_delay - arr_delay,
+    speed = distance / air_time * 60,
+    .after = day
+  )
+```
+
+```{r}
+# Mutate
+flights |>
+  mutate(
+    gain = dep_delay - arr_delay,
+    hours = air_time / 60,
+    gain_per_hour = gain / hours,
+    .keep = "used"
+  )
+```
+
+```{r}
+# Select, rename, relocate
+flights |>
+  select(year,month,day)
+
+flights |>
+  select(year:day)
+
+flights |>
+  select(!year:day)
+
+flights |>
+  select(where(is.character))
+
+flights |>
+  select(tail_num = tailnum)
+
+flights |>
+  rename(tail_num = tailnum)
+
+flights |>
+  relocate(time_hour,air_time)
+
+flights |>
+  relocate(year:dep_time,.after=time_hour)
+
+flights |>
+  relocate(starts_with("arr"),.before=dep_time)
+```
+
+```{r}
+# Question 33
+q33<-"I would expect these variables to all be related to a plane's depature. Departure delay would represent the time between sched_dep_time and Dep_time."
+```
+
+```{r}
+# Question 34
+q34<-"There are a lot of methods but I would use the select function and define each column or I would use the select function and the contains function to find Delay"
+```
+
+```{r}
+# Question 35
+flights |>
+  select(tailnum,tailnum)
+
+q35<-"If the same column is listed twice, the column will only be pulled in once."
+```
+
+```{r}
+# Question 36
+q36<-"The any_of() function helps with selecting data that meets a particular filter critera. Specifically, the functions means select any data from the specified columns that meet a condition. For this example, it would be help because we would be able to select particular flights based upon a specified condition."
+```
+
+```{r}
+# Question 37
+flights |> select(contains("TIME"))
+q37<-"This function selects any columns that contains the word time regardless of case. If case is important, we could add the ignore.case argument."
+```
+
+```{r}
+#Question 38
+flights |>
+  select(air_time_min=air_time)
+```
+
+```{r}
+# Question 39
+q39<-"The code results in an error since arr_delay was not selected within the select function."
+```
+
+```{r}
+#Example
+flights |>
+  filter(dest=="IAH") |>
+  mutate(speed = distance / air_time * 60) |>
+  arrange(desc(speed))
+```
+
+```{r}
+#Group By
+flights |>
+  group_by(month)
+
+flights |> 
+  group_by(month) |> 
+  summarise(
+    avg_delay = mean(dep_delay,na.rm = TRUE),
+    n=n()
+  )
+```
+
+```{r}
+flights |> 
+  group_by(dest) |> 
+  slice_max(arr_delay,n=1,with_ties = FALSE) |> 
+  relocate(dest)
+```
+
+```{r}
+daily<-flights |> 
+  group_by(year,month,day)
+```
+
+```{r}
+daily |>
+  summarise(
+    n=n(),
+    .groups="drop_last"
+  )
+
+daily |>
+  summarise(
+    n=n(),
+    .groups="drop"
+  )
+
+daily |> 
+  ungroup()
+
+daily |>
+  ungroup() |> 
+  summarise(
+    avg_delay = mean(dep_delay,na.rm=TRUE),
+    flights=n()
+  )
+
+flights |>
+  summarise(
+    delay = mean(dep_delay,na.rm=TRUE),
+    n=n(),
+    .by=c(origin,dest)
+  )
+```
+
+```{r}
+options(scipen = 999)
+# Question 40
+flights |> 
+  group_by(carrier,dest) |> 
+  summarise(delay = sum(dep_delay,na.rm=TRUE),n=n()) |> 
+  mutate(avg_delay=delay/n) |>
+  arrange(desc(avg_delay))
+
+flights |> 
+  group_by(carrier) |>
+  summarise(delay=mean(dep_delay+arr_delay,na.rm = TRUE)) |> 
+  arrange(desc(delay))
+```
+
+```{r}
+# Question 41
+flights |> 
+  group_by(dest) |> 
+  slice_max(arr_delay,n=1,with_ties = TRUE) |> 
+  arrange(desc(dep_delay))
+```
+
+```{r}
+# Question 42
+flights |> 
+  group_by(dep_time) |> 
+  summarise(mean_delay=mean(arr_delay,na.rm = TRUE)) |> 
+  ggplot(aes(x=dep_time,y=mean_delay))+
+  geom_line()
+
+q42<-"The delays appears to decrease significantly after the morning."
+```
+
+```{r}
+# Question 43
+q43<-"If a negative value is introduced, all rows within the tibble will be displayed."
+```
+
+```{r}
+# Question 44
+q44<-"The count function displays the number of unique values. The count values can then by sorted by the arrange function. In addition, the sort attribute can be used to arrange the count values."
+```
+
+```{r}
+# Question 45
+df <- tibble(
+  x=1:5,
+  y=c("a","b","a","a","b"),
+  z=c("K","K","L","L","K")
+)
+
+ df |> 
+   group_by(y)
+ 
+ q45<-"There is visually no changes but the tibble is now grouped by the y variable."
+```
+
+```{r}
+# Question 46
+df |>
+  arrange(y)
+q46<-"The tibble is sorted alphabetically on the y variable"
+```
+
+```{r}
+# Question 47
+df |> 
+  group_by(y) |> 
+  summarise(mean_x=mean(x))
+q47<-"The tibble is grouped by variable y and is then a mean summarize function is called."
+```
+
+```{r}
+# Question 48
+df |> 
+  group_by(y,z) |> 
+  summarise(mean_x=mean(x),.groups = "drop")
+q48<-"The unique y and z variable combinations are summarized by taking the mean mean of x."
+```
+
+```{r}
+# Question 49
+df |> 
+  group_by(y,z) |> 
+  summarise(mean_x=mean(x))
+
+df |> 
+  group_by(y,z) |> 
+  mutate(mean_x = mean(x))
+
+q49<-"The difference between these two pipelines is that the first one summarizes with the mean function and the second one adds a new column based upon the mean of x."
+```
+
+# Chapter 4: Workflow Code Style
+```{r}
+library(styler)
+library(tidyverse)
+library(nycflights13)
+#Command + Shift + P
+```
+
+```{r}
+#stive for
+#z <- (a + b)^2 / d
+
+#avoid
+#z<-( a + b ) ^ 2/d
+
+#cmd + shift + R 
+
+```
+
+```{r}
+# Question 50
+flights |>
+  filter(dest=="IAH") |>
+  group_by(year,month,day) |> 
+  summarise(
+    n=n(),
+    delay=mean(arr_delay,
+    na.rm=TRUE)) |> 
+  filter(n>10) 
+
+flights |> 
+  filter(
+    carrier=="UA",
+    dest%in%c("IAH","HOU"),
+    sched_dep_time>0900,
+    sched_arr_time<2000) |> 
+  group_by(flight) |> 
+  summarise(delay=mean(arr_delay,na.rm = TRUE),cancelled=sum(is.na(arr_delay)),n=n()) |> 
+  filter(n>10)
+```
+
+# Chapter 4: Workflow Code Style
+```{r}
+library(tidyverse)
+```
+
+```{r}
+#Question 51
+#Table 1
+q51=c(t1,t2,t3)
+
+t1<-"A single row represents the number of TB cases in a specific country for a single year. The column variables are self explainatory. Year=Year, Country = Country, number = number of cases, population = population."
+
+t2<-"A single row represents the number of TB cases in a specific country for a single year. The difference is that this table is grouped by metric count."
+
+t3<-"A single row represents the rate of TB cases in a specific country for a single year. The difference is that this table only has country, year and rate."
+```
+
+```{r}
+#Question 52
+q52<-"In order to properly get the mutation results I would have to split the tables apart / use a regular regression and then join the tables back to each other by country."
+```
+
+```{r}
+#pivot_longer() / pivot_wider()
+billboard
+
+billboard |> 
+  pivot_longer(
+    col=starts_with("wk"),
+    names_to = "week",
+    values_to = "rank",
+    values_drop_na = TRUE
+  ) |> 
+  mutate(
+    week = parse_number(week)
+  )
+```
+
+```{r}
+billboard |> 
+  pivot_longer(
+    col=starts_with("wk"),
+    names_to = "week",
+    values_to = "rank",
+    values_drop_na = TRUE
+  ) |> 
+  mutate(
+    week = parse_number(week)
+  ) |> 
+  ggplot(aes(x=week,y=rank,group=track))+
+  geom_line(alpha=0.25)+
+  scale_y_reverse()
+```
+```{r}
+df <- tribble(
+  ~id, ~bp1, ~bp2,
+  "A", 100, 120,
+  "B", 140, 115,
+  "C", 120, 125
+)
+```
+
+```{r}
+df |> 
+  pivot_longer(
+    cols = bp1:bp2,
+    names_to = "measurement",
+    values_to = "value"
+  )
+```
+
+```{r}
+who2 |> 
+  pivot_longer(
+    cols = !(country:year),
+    names_to = c("diagnosis","gender","age"),
+    names_sep = "_",
+    values_to = "count"
+  )
+```
+
+```{r}
+household |> 
+  pivot_longer(
+    cols = !family,
+    names_to = c(".value","child"),
+    names_sep = "_",
+    values_drop_na = TRUE
+  )
+```
+
+```{r}
+#Pivot Wider
+cms_patient_experience
+
+cms_patient_experience |> 
+  distinct(measure_cd,measure_title)
+
+cms_patient_experience |> 
+  pivot_wider(
+    id_cols=starts_with("org"),
+    names_from = measure_cd,
+    values_from = prf_rate
+  )
+
+```
+
+```{r}
+df <- tribble(
+  ~id,~measurement,~value,
+  "A", "bp1", 100,
+  "B", "bp1", 140,
+  "B", "bp2", 115,
+  "A", "bp2", 120,
+  "A", "bp3", 105
+)
+
+df |> 
+  pivot_wider(
+    names_from = measurement,
+    values_from = value
+  )
+
+df |> 
+  distinct(measurement) |> 
+  pull()
+
+df |> 
+  select(-measurement,-value) |> 
+  distinct()
+
+                                                                                                  
+```
+# Chapter 6: Workflow: Scripts and Projects
+```{r}
+usethis::use_blank_slate()
+```
+
+```{r}
+getwd()
+```
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(caret)
+
+ggplot(diamonds,aes(x=carat,y=price))+
+  geom_hex()
+ggsave("diamonds.png")
+```
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+```{r}
+students<-read_csv("https://pos.it/r4ds-students-csv")
+
+students
+
+students<-read_csv("https://pos.it/r4ds-students-csv",na=c("N/A",""))
+
+students <- students |>
+  rename(student_id = `Student ID`,
+         full_name = `Full Name`)
+
+students <- students |>
+  janitor::clean_names() |>
+  mutate(meal_plan = factor(meal_plan),
+         age = parse_number(if_else(age == "five", "5", age)))
+         
+```
+
+```{r}
+read_csv("The first line of metadata
+          The second line of meta daat
+          a,b,c
+          1,2,3
+          4,5,6",
+          skip=2)
+
+read_csv(
+  "# A comment I want to skip
+  x,y,z
+  1,2,3",
+  comment="#"
+)
+
+read_csv(
+  "1,2,3
+   4,5,6",col_names= FALSE)
+
+read_csv(
+  "1,2,3
+   4,5,6",col_names= c("x","y","z"))
+
+```
+
+```{r}
+#Question 53
+q53<-"I would use the read_delim() function to pull in data that is separated with the | symbol."
+```
+
+```{r}
+#Question 54
+q54<-"read_csv() and read_tsv() share many arguments. Specifically they share col_names, col_types, id etc..."
+```
+
+```{r}
+#Question 55
+q55<-"The most important argument for read_fwf() is the widths() function since the field size must be specified."
+```
+
+```{r}
+#Question 56
+library(readr)
+
+q56 <- read_csv("x,y\n1,'a,b'", quote = "'")
+
+```
+
+```{r}
+#Question 57
+read_csv("a,b/n 
+          12,3/n 
+          4,5,6")
+
+read_csv("a,b,c/n
+          1,2/n
+          1,2,3,4")
+
+read_csv("a,b\n1")
+
+read_csv('a,b\n"1,2",3\na,b')
+
+read_csv2("a;\n1;3")
+
+```
+
+```{r}
+#Question 58
+annoying <- tibble(
+  '1' = 1:10,
+  '2' = as.numeric('1') * 2 + rnorm(10)
+)
+
+annoying |> 
+  select(1)
+
+annoying |> 
+  ggplot(aes(x=`1`,y=`2`))+
+  geom_point()
+
+annoying <- annoying |>
+  mutate(`3` = `2` / `1`)
+
+annoying |> 
+  rename(`One`=`1`,
+         `Two`=`2`,
+         `Three`=`3`)
+```
+
+```{r}
+read_csv("
+         logical.numeric,date,string
+         TRUE,1,2021-01-15,abc
+         false,4.5,2021-02-15,def
+         T,Inf,2021-02-16,ghi")
+```
+
+```{r}
+simple_csv <- "
+x
+10
+.
+20
+30"
+
+df<-read_csv(
+  simple_csv,
+  col_types = list(x=col_double()))
+
+problems(df)
+
+read_csv(
+  simple_csv,na=".")
+```
+
+```{r}
+another_csv <- "
+x,y,z
+1,2,3"
+
+read_csv(
+  another_csv,
+  col_types = cols(.default=col_character())
+)
+
+read_csv(
+  another_csv,
+  col_types = cols_only(x=col_character())
+)
+```
+
+```{r}
+sales_files <- c(
+  "https://pos.it/r4ds-01-sales",
+  "https://pos.it/r4ds-02-sales",
+  "https://pos.it/r4ds-03-sales"
+)
+read_csv(sales_files,id="file")
+
+sales_files <- list.files("data",pattern = "sales\\.csv$",full.names = TRUE)
+sales_files
+```
+
+```{r}
+write_csv(students,"students.csv")
+```
+
+```{r}
+write_rds(students,"students.rds")
+read_rds("students.rds")
+```
+
+```{r}
+library(arrow)
+write_parquet(students,"students.parquet")
+read_parquet("students.parquet")
+```
+
+```{r}
+#Data Entry
+tibble(
+  x=c(1,2,5),
+  y=c("h","m","g"),
+  z=c(0.08,0.83,0.60)
+)
+
+tribble(
+  ~x,~y,~z,
+  1,"h",0.08,
+  2,"m",0.83,
+  5,"g",0.60
+)
+```
+
+# Chapter 8: Workflow Getting Help
+```{r}
+y<-1:4
+mean(y)
+```
+
+```{r}
+library(reprex())
+y<- 1:4
+mean(y)
+
+reprex(mtcars)
+```
+
+```{r}
+tidyverse_update()
+```
+
+```{r}
+dput(mtcars)
+```
+
+```{r}
+reprex(mtcars<-structure(list(mpg = c(21, 21, 22.8, 21.4, 18.7, 18.1, 14.3, 
+24.4, 22.8, 19.2, 17.8, 16.4, 17.3, 15.2, 10.4, 10.4, 14.7, 32.4, 
+30.4, 33.9, 21.5, 15.5, 15.2, 13.3, 19.2, 27.3, 26, 30.4, 15.8, 
+19.7, 15, 21.4), cyl = c(6, 6, 4, 6, 8, 6, 8, 4, 4, 6, 6, 8, 
+8, 8, 8, 8, 8, 4, 4, 4, 4, 8, 8, 8, 8, 4, 4, 4, 8, 6, 8, 4), 
+    disp = c(160, 160, 108, 258, 360, 225, 360, 146.7, 140.8, 
+    167.6, 167.6, 275.8, 275.8, 275.8, 472, 460, 440, 78.7, 75.7, 
+    71.1, 120.1, 318, 304, 350, 400, 79, 120.3, 95.1, 351, 145, 
+    301, 121), hp = c(110, 110, 93, 110, 175, 105, 245, 62, 95, 
+    123, 123, 180, 180, 180, 205, 215, 230, 66, 52, 65, 97, 150, 
+    150, 245, 175, 66, 91, 113, 264, 175, 335, 109), drat = c(3.9, 
+    3.9, 3.85, 3.08, 3.15, 2.76, 3.21, 3.69, 3.92, 3.92, 3.92, 
+    3.07, 3.07, 3.07, 2.93, 3, 3.23, 4.08, 4.93, 4.22, 3.7, 2.76, 
+    3.15, 3.73, 3.08, 4.08, 4.43, 3.77, 4.22, 3.62, 3.54, 4.11
+    ), wt = c(2.62, 2.875, 2.32, 3.215, 3.44, 3.46, 3.57, 3.19, 
+    3.15, 3.44, 3.44, 4.07, 3.73, 3.78, 5.25, 5.424, 5.345, 2.2, 
+    1.615, 1.835, 2.465, 3.52, 3.435, 3.84, 3.845, 1.935, 2.14, 
+    1.513, 3.17, 2.77, 3.57, 2.78), qsec = c(16.46, 17.02, 18.61, 
+    19.44, 17.02, 20.22, 15.84, 20, 22.9, 18.3, 18.9, 17.4, 17.6, 
+    18, 17.98, 17.82, 17.42, 19.47, 18.52, 19.9, 20.01, 16.87, 
+    17.3, 15.41, 17.05, 18.9, 16.7, 16.9, 14.5, 15.5, 14.6, 18.6
+    ), vs = c(0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 
+    0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1), am = c(1, 
+    1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 
+    0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1), gear = c(4, 4, 4, 3, 
+    3, 3, 3, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 4, 4, 4, 3, 3, 3, 
+    3, 3, 4, 5, 5, 5, 5, 5, 4), carb = c(4, 4, 1, 1, 2, 1, 4, 
+    2, 2, 4, 4, 3, 3, 3, 4, 4, 4, 1, 2, 1, 1, 2, 2, 4, 2, 1, 
+    2, 2, 4, 6, 8, 2)), row.names = c("Mazda RX4", "Mazda RX4 Wag", 
+"Datsun 710", "Hornet 4 Drive", "Hornet Sportabout", "Valiant", 
+"Duster 360", "Merc 240D", "Merc 230", "Merc 280", "Merc 280C", 
+"Merc 450SE", "Merc 450SL", "Merc 450SLC", "Cadillac Fleetwood", 
+"Lincoln Continental", "Chrysler Imperial", "Fiat 128", "Honda Civic", 
+"Toyota Corolla", "Toyota Corona", "Dodge Challenger", "AMC Javelin", 
+"Camaro Z28", "Pontiac Firebird", "Fiat X1-9", "Porsche 914-2", 
+"Lotus Europa", "Ford Pantera L", "Ferrari Dino", "Maserati Bora", 
+"Volvo 142E"), class = "data.frame"))
+```
+
+## Part 2: Visualize
+# Chapter 9: Layers
+```{r}
+library(tidyverse)
+```
+
+```{r}
+mpg
+```
+
+```{r}
+ggplot(mpg,aes(x=displ,y=hwy,color=class))+
+  geom_point()
+
+ggplot(mpg,aes(x=displ,y=hwy,shape=class))+
+  geom_point()
+
+ggplot(mpg,aes(x=displ,y=hwy,size=class))+
+  geom_point()
+
+ggplot(mpg,aes(x=displ,y=hwy,alpha=class))+
+  geom_point()
+
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_point(color="blue")
+```
+
+```{r}
+# Question 59
+ggplot(mpg,aes(x=hwy,y=displ,color='pink'))+
+  geom_point(shape=17)
+```
+
+```{r}
+# Question 60
+#ggplot(mpg,aes(color='blue')) + geom_point(aes(x=displ,y=hwy))
+ggplot(mpg,aes(x=displ,y=hwy,color='pink'))+geom_point(color='blue')
+q60<-"The points are not blue because the x and y need to be defined within the ggplot() function call and the color needs to be defined within the geom_point() function."
+
+```
+
+```{r}
+# Question 61
+q61<-"The stroke aesthetic determines the thickness of the visual attribute. The most common geoms are scatterplots, line plots, and bar charts."
+```
+
+```{r}
+# Question 62
+ggplot(mpg,aes(x=displ,y=hwy,color='pink'))+geom_point(color=mpg$displ)
+q62<-"If an aesthetic is mapped to something that is not a variable, then an error will occur."
+```
+
+```{r}
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_point()
+
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_smooth()+
+  geom_point()
+```
+
+```{r}
+ggplot(mpg,aes(x=displ,y=hwy,shape=drv))+
+  geom_smooth()
+
+ggplot(mpg,aes(x=displ,y=hwy,linetype=drv))+
+  geom_smooth()
+```
+
+```{r}
+ggplot(mpg,aes(x=displ,y=hwy,color=drv))+
+  geom_point()+
+  geom_smooth(aes(linetype=drv))
+```
+
+```{r}
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_point()+
+  geom_point(
+    data = mpg |> 
+      filter(class=="2seater"),
+    shape="circle open",size=3,color="red"
+  )
+```
+
+```{r}
+ggplot(mpg,aes(x=hwy))+
+  geom_histogram(binwidth = 2)
+
+ggplot(mpg,aes(x=hwy))+
+  geom_density()
+
+ggplot(mpg,aes(x=hwy))+
+  geom_boxplot()
+
+
+```
+```{r}
+library(ggridges)
+
+ggplot(mpg,aes(x=hwy,y=drv,fill=drv,color=drv))+
+  geom_density_ridges(alpha=0.5,show.legend = FALSE)
+```
+```{r}
+# Question 63
+q63<-"geom_line(), geom_boxplot(), geom_histogram(), geom_area()"
+```
+
+```{r}
+# Question 64
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_smooth(aes(color=drv))
+q64<-"The legend arguement determine if a legend should be added to the graph. If I remove it, the legend is added back in. We used this earlier since we more focused on the splitting the data into the three drv groups."
+```
+
+```{r}
+# Question 65
+q65<-"The se argument determines if a confidence interval should be added."
+```
+
+```{r}
+#Question 66
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_point()+
+  geom_smooth(se=FALSE)
+
+ggplot(mpg,aes(x=displ,y=hwy,shape=drv))+
+  geom_point()+
+  geom_smooth(se=FALSE)
+
+ggplot(mpg,aes(x=displ,y=hwy,color=drv))+
+  geom_point()+
+  geom_smooth(se=FALSE)
+
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_point(aes(color=drv))+
+  geom_smooth(se=FALSE)
+
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_point(aes(color=drv))+
+  geom_smooth(se=FALSE,aes(linetype=drv))
+
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_point(aes(color=drv,fill='white'),fill='white')+
+  geom_point(shape=1,color='white',size=3,stroke=2)
+
+```
+
+```{r}
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_point()+
+  facet_grid(drv~cyl,scales="free_y")
+```
+
+```{r}
+# Question 66
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_point()+
+  facet_wrap(~cty)
+q66<-"Faceting a continious variable will make a visual for each unique value"
+```
+
+```{r}
+# Question 67
+ggplot(mpg)+
+  geom_point(aes(x=displ,y=cyl))+
+  facet_grid(drv~cyl)
+q67<-"The empty charts represent value combinations that don't exist between the two variables."
+```
+
+```{r}
+# Question 68
+ggplot(mpg) +
+  geom_point(aes(x=displ,y=hwy))+
+  facet_grid(drv~.)
+
+ggplot(mpg)+
+  geom_point(aes(x=displ,y=hwy))+
+  facet_grid(cyl~.)
+
+q68<-"These plots facet by drv and cyl. The . position relative to ~ determines the plot orientation."
+```
+
+```{r}
+# Question 69
+ggplot(mpg)+
+  geom_point(aes(x=displ,y=hwy))+
+  facet_wrap(~class,nrow=2)
+q69<-"One advantage of faceting is that it's easier to evaluate each grouping. The disdvantage is that it's harder to compare between groups. If we have a very large dataset, faceting would be the best option since will be able to split the data into small groupings."
+```
+
+```{r}
+# Question 70
+q70<-"nrow determines the number of rows, ncols determines the number of columns. Additional options include scales, labeller etc. facet_grid() doesn't need the rows or columns argument because we are faceting of continious variables."
+```
+
+```{r}
+#Question 71
+ggplot(mpg,aes(x=displ))+
+  geom_histogram()+
+  facet_grid(drv~.)
+
+ggplot(mpg,aes(x=displ))+
+  geom_histogram()+
+  facet_grid(.~drv)
+
+q71<-"The first plot is easier to read because each plot shares the same x-axis range / the plots are stacked on top of each other. It's much harder to compare the plots when they are side by side."
+
+
+```
+
+```{r}
+#Question 72
+ggplot(mpg)+
+  geom_point(aes(x=displ,y=hwy))+
+  facet_grid(drv~.)
+
+ggplot(mpg)+
+  geom_point(aes(x=displ,y=hwy))+
+  facet_wrap(~drv,dir="h")
+
+q72<-"When switchign from facet wrap to facet grid, the graph orientation changes from horizontal to vertical."
+```
+
+```{r}
+ggplot(diamonds,aes(x=cut))+geom_bar()
+
+ggplot(diamonds,aes(x=cut,y=after_stat(prop),group=1))+geom_bar()
+
+ggplot(diamonds) +
+  stat_summary(
+    aes(x=cut, y=depth),
+    fun.min=min,fun.max=max,
+    fun=median
+  )
+```
+```{r}
+q74<-"The default geom associated with stat_summary() in R is a cross bar. "
+
+ggplot(diamonds) +
+  stat_summary(
+    aes(x=cut, y=depth),
+    fun.min=min,fun.max=max,
+    fun=median
+  )
+
+ggplot(diamonds, aes(x = cut, y = depth)) +
+  geom_point(stat = "summary", fun = "median", position = "identity", color = "black") +
+  geom_linerange(stat = "summary", fun.min = "min", fun.max = "max", position = "identity", color = "black")
+```
+
+```{r}
+#Question 75
+q75<-"The difference between geom_col() and geom_bar() is that geom_col() is used when both x and y asethetics are known and geom_bar() is used typically when only the x asethetic is known."
+```
+
+```{r}
+# Question 76
+q76<-"Some of the common pairs are scatterplots (geom_point, stat_identity), line charts (geom_line, stat_identity), and Bar Charts (geom_bar(), stat_count). These pairs are all similar because they perfrom functions to calculate an additional statistic or estimates."
+```
+
+```{r}
+# Question 77
+q77<-"stat_smooth calculates fitted values from a regression model that uses the x and y variables. Some common arguments include the regression type, formula, confidence interval, or distribution family."
+```
+
+```{r}
+#Question 78
+ggplot(diamonds,aes(x=cut,y=after_stat(prop)))+
+  geom_bar()
+
+ggplot(diamonds,aes(x=cut,fill=color,y=after_stat(prop)))+
+  geom_bar()
+
+q78<-"The group argument in proportion plots must be specified so that the proportion is calculated properly when considering each category. If the group is not specified, the graph will incorrectly calcuate the proportion."
+```
+
+```{r}
+ggplot(mpg,aes(x=drv,color=drv))+
+  geom_bar()
+
+ggplot(mpg,aes(x=drv,fill=drv))+
+  geom_bar()
+
+ggplot(mpg,aes(x=drv,fill=class))+
+  geom_bar()
+
+ggplot(mpg,aes(x=drv,fill=class))+
+  geom_bar(alpha=1/5,position="identity")
+
+ggplot(mpg,aes(x=drv,color=class))+
+  geom_bar(fill=NA,position = "identity")
+
+ggplot(mpg,aes(x=drv,fill=class))+
+  geom_bar(position = "fill")
+
+ggplot(mpg,aes(x=drv,fill=class))+
+  geom_bar(position = "dodge")
+```
+
+```{r}
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_point()
+
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_point(position="jitter")
+```
+
+```{r}
+#Question 78
+ggplot(mpg,aes(x=cty,y=hwy))+
+  geom_point(position="jitter",alpha=0.5)
+q78<-"The problem with this plot is that the points overlap each other. The jitter function produces some randonness in order to see the points. "
+```
+
+```{r}
+#Question 79
+q79<-"These plots produce the same chart. The position=identity argument plots the points the same way as the default setting." 
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_point()
+
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_point(position="identity")
+```
+
+```{r}
+#Question 80
+q80<-"The width and height parameters control the amount of jittering."
+```
+
+```{r}
+#Question 81
+q81<-"Geom count creates an asethetic based upon point size while geom jitter creates an asethetic that slight randomness to the points."
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_count()
+```
+
+```{r}
+#Question 81
+q81<-"The default position is dodge2 which plots each box and whisker plot next to each other."
+ggplot(mpg,aes(x=displ,y=drv))+
+  geom_boxplot(position="dodge")
+
+```
+
+```{r}
+nz<-map_data("nz")
+
+ggplot(nz,aes(x=long,y=lat,group=group))+
+  geom_polygon(fill="white",color="black")
+
+ggplot(nz,aes(x=long,y=lat,group=group))+
+  geom_polygon(fill="white",color="black")+
+  coord_quickmap()
+
+bar <- ggplot(data=diamonds)+
+  geom_bar(
+    mapping=aes(x=clarity,fill=clarity),
+    show.legend = FALSE,
+    width = 1
+  ) +
+  theme(aspect.ratio = 1)
+
+bar + coord_flip()
+bar + coord_polar()
+```
+
+```{r}
+#Question 81
+bar_chart <- ggplot(mpg, aes(x = drv, fill = trans)) +
+  geom_bar() +
+  labs(title = "Stacked Bar Chart")
+
+pie_chart <- bar_chart + coord_polar()
+```
+
+```{r}
+#Question 82
+q82<-"The difference between the coord_quickmap() and coord_map() is that coord_quickmap() is a coordniate system that provides a good projection quickly for x and y coordinates while the coord_map() function uses the mercator projection."
+```
+
+```{r}
+#Question 83
+q83<-ggplot(data=mpg,mapping=aes(x=cty,y=hwy))+
+  geom_point()+
+  geom_abline()+
+  coord_fixed()
+q83<-"From this plot, we can see that hwy mpg is always high than city mpg. The coord_fixed function ensures that the x-axis and y-axis has the same coordinate scale. The geom_abline addes a 45 degree angle that helps add perspective. "
+```
+
+# Chapter 10: Exploritory Data Analysis
+```{r}
+library(tidyverse)
+```
+
+```{r}
+ggplot(diamonds,aes(x=carat))+
+  geom_histogram(bins=10)
+
+smaller <- diamonds |> 
+              filter(carat<3)
+
+ggplot(smaller,aes(x=carat))+
+  geom_histogram(binwidth =.01)
+```
+
+```{r}
+ggplot(diamonds,aes(x=y))+
+  geom_histogram(binwidth=0.5)
+
+ggplot(diamonds,aes(x=y))+
+  geom_histogram(binwidth=0.5)+
+  coord_cartesian(ylim=c(0,50))
+
+unusual <- diamonds |> 
+  filter(y<3 | y>20) |> 
+  select(price,x,y,z) |> 
+  arrange(y)
+```
+
+```{r}
+#Question 83
+ggplot(diamonds,aes(x=x))+
+  geom_histogram()
+
+ggplot(diamonds,aes(x=y))+
+  geom_histogram()
+
+ggplot(diamonds,aes(x=z))+
+  geom_histogram()
+
+q83<-"By looking at the distribution of the x,y and z variables, I can see that y and z have similar distribution while x has a wide range between 3-9. I believe that y and z is the length and width since diamonds are typically round and x is the depth which we would expect to have some variation."
+```
+
+```{r}
+#Question 84
+ggplot(diamonds,aes(x=price))+
+  geom_histogram(binwidth = 250)
+
+q84<-"By looking at the price distribution, we can see that the majority of diamonds have prices that are less than 5,000 dollars. In addition, the distribution seemes to be skewed to the left. I find it suprising that the count frequency decreases gradually after 5,000 dollars."
+```
+
+```{r}
+#Question 85
+diamonds |> 
+  filter(carat==0.99) |> 
+  summarise(count=n())
+
+diamonds |> 
+  filter(carat==1) |> 
+  summarise(count=n())
+
+q85<-"There are 23 diamonds that are 0.99 carat and 1558 diamonds that are 1 carat. I believe this is due to variation within diamonds cuts. In addition, I believe 1 carat diamonds are a common selection."
+```
+
+```{r}
+# Question 86
+q86<-"coord_cartesian() is different than xlim() and ylim() because coord_cartesian() zooms in on the ggplot while xlim and ylim filter the underlaying dataset. The outcome is similar since both function are limiting the visable range. If the binwidth function is not set, then R will find an appropriate bin width. If the objective is to only see half a bar, then coord_cartesian() is the recommended function. The ylim() or xlim() will not work because it will filter out the whole bar."
+```
+
+```{r}
+diamonds2<-diamonds |> 
+  filter(between(y,3,20))
+
+diamonds2<-diamonds |> 
+  mutate(y=if_else(y<3 | y>20,NA,y))
+
+ggplot(diamonds2,aes(x=x,y=y))+
+  geom_point(na.rm = TRUE)
+```
+
+```{r}
+nycflights13::flights |> 
+  mutate(
+    cancelled = is.na(dep_time),
+    sched_hour = sched_dep_time %/% 100,
+    sched_min = sched_dep_time %% 100,
+    sched_dep_time = sched_hour + (sched_min/60)
+  ) |> 
+  ggplot(aes(x=sched_dep_time))+
+  geom_freqpoly(aes(color=cancelled,bindwith=1/4))
+```
+
+```{r}
+# Question 87
+q87<-"Histograms will ignore NA values while bar charts include NA values. Histograms exclude them since they deal primarily with counts while bar charts usually involve categories. In this case we would not want to count NA values in counts but include them as a category."
+```
+
+```{r}
+# Question 88
+q88<-"na.rm is an argument that allows for values to be either included or removed with the mean() or sum() functions."
+```
+
+```{r}
+# Question 89
+nycflights13::flights |> 
+  mutate(
+    cancelled = is.na(dep_time),
+    sched_hour = sched_dep_time %/% 100,
+    sched_min = sched_dep_time %% 100,
+    sched_dep_time = sched_hour + (sched_min/60)
+  ) |> 
+  ggplot(aes(x=sched_dep_time))+
+  geom_freqpoly(aes(color=cancelled,bindwith=1/4))+
+  facet_wrap(~cancelled,scales = "fixed")
+```
+
+```{r}
+ggplot(diamonds,aes(x=price))+
+  geom_freqpoly(aes(color=cut),binwidth=300,linewidth=0.75)
+```
+
+```{r}
+ggplot(diamonds,aes(x=price,y=after_stat(density)))+
+  geom_freqpoly(aes(color=cut),binwidth=500,linewidth=0.75)
+```
+
+```{r}
+ggplot(diamonds,aes(x=cut,y=price))+
+  geom_boxplot()
+```
+
+```{r}
+ggplot(mpg,aes(x=class,y=hwy))+
+  geom_boxplot()
+
+ggplot(mpg,aes(x=fct_reorder(class,hwy,median),y=hwy))+
+  geom_boxplot()
+
+ggplot(mpg,aes(y=fct_reorder(class,hwy,median),x=hwy))+
+  geom_boxplot()
+```
+
+```{r}
+# Question 90
+nycflights13::flights |> 
+  mutate(
+    cancelled = is.na(dep_time),
+    sched_hour = sched_dep_time %/% 100,
+    sched_min = sched_dep_time %% 100,
+    sched_dep_time = sched_hour + (sched_min/60)
+  ) |> 
+  ggplot(aes(x=sched_dep_time,y=after_stat(density)))+
+  geom_freqpoly(aes(color=cancelled,bindwith=1/4))
+```
+
+```{r}
+# Question 91
+library(corrplot)
+summary(lm(data=diamonds,price~.))
+nd<-diamonds |> 
+  select_if(is.numeric)
+m<-cor(nd)
+corrplot(m)
+
+ggplot(diamonds,aes(x=price,y=after_stat(density)))+
+  geom_freqpoly(aes(color=cut),binwidth=500,linewidth=0.75)
+
+q91<-"According to my correlation plot, it appears that the x, y, and z variables may be significant in predicting diamond price. It appears that the ideal cuts seem to be more affordiable than the other cuts. I believe that the combination of these two findings show that the diamond size is more significant than the quality of the cut."
+```
+
+```{r}
+# Question 92
+ggplot(mpg,aes(x=fct_reorder(class,hwy,median),y=hwy))+
+  geom_boxplot()
+
+ggplot(mpg,aes(x=fct_reorder(class,hwy,median),y=hwy))+
+  geom_boxplot()+
+  coord_flip()
+q92<-"It appears that the coord_flip() function performs the same action as switching the x and y arguments."
+```
+
+```{r}
+# Question 93
+library(lvplot)
+ggplot(diamonds,aes(x=fct_reorder(cut,price,median),y=price))+
+  geom_boxplot()+
+  coord_flip()
+
+ggplot(diamonds,aes(x=fct_reorder(cut,price,median),y=price))+
+  geom_lv()+
+  coord_flip()
+
+q93<-"I learned from the letter value plot that box plots often do not tell the full story of the data. In this example, the cuts have a lot of outliers. By using the letter value plot, it's much easier to see the distribution of the price among the various cut categories. To interpret this viaual, one must understand that each letter represents a percentile range that decreases by half for each letter when starting from the center. As you can see, the majority of diamonds are under $2,500."
+```
+
+```{r}
+# Question 94
+ggplot(diamonds,aes(x=fct_reorder(cut,price,median),y=price))+
+  geom_violin()+
+  coord_flip()
+
+ggplot(diamonds,aes(x=price))+
+  geom_histogram()+
+  coord_flip()+
+  facet_wrap(~cut)
+
+ggplot(diamonds,aes(x=price))+
+  geom_freqpoly(aes(color=cut),binwidth=500,linewidth=0.75)
+
+ggplot(diamonds,aes(x=price,y=after_stat(density)))+
+  geom_freqpoly(aes(color=cut),binwidth=500,linewidth=0.75)
+
+q94<-"The violin plot is great for seeing distribution shape but lacks median or percentile markings. The faceted histogram is create to compare grouops but struggles when a particular group has a few number of values. The two frequency plots are create for comparising distribution shape and density but lacks the ability to see groupings."
+```
+
+```{r}
+# Question 95
+library(ggbeeswarm)
+ ggplot2::ggplot(ggplot2::mpg,aes(class, hwy)) + geom_beeswarm()
+  ggplot2::ggplot(ggplot2::mpg,aes(class, hwy)) + geom_quasirandom()
+ ggplot2::ggplot(ggplot2::mpg,aes(class, hwy)) + geom_point()
+ q95<-"The two main functions of ggbeeswarm are geom_swarm and quasirandom. ggbeeswarm aligns the points in a violin shape while the quasirandom function shows the points in a violin shape along with added randomness."
+```
+
