@@ -1738,5 +1738,88 @@ library(ggbeeswarm)
  
 ```
 
+```{r}
+ggplot(diamonds,aes(x=cut,y=color))+
+  geom_count()
 
+diamonds |> 
+  count(color,cut)
+
+diamonds |> 
+  count(color,cut) |> 
+  ggplot(aes(x=color,y=cut))+
+  geom_tile(aes(fill=n))
+```
+
+```{r}
+# Question 95
+q95<-"I could facet the last plot in order to more clearly show the distribution of cut within color or color within cut."
+```
+
+```{r}
+# Question 96
+ggplot(diamonds, aes(x = color, fill = cut)) +
+  geom_bar(position = "stack") +
+  labs(title = "Segmented Bar Chart of Diamonds",
+       x = "color",
+       y = "Count",
+       fill = "cut")
+q96<-"It is much easier to see the difference in color count when switching the x and y axis."
+```
+
+```{r}
+# Question 97
+flights<-nycflights13::flights
+
+nycflights13::flights |>
+  filter(dest=="ORD" | dest=="IAH") |> 
+  group_by(dest,month) |> 
+  summarise(AFD=mean(dep_delay,na.rm=TRUE,.groups="drop")) |> 
+  ggplot(aes(x=dest,y=month,fill=AFD))+
+  geom_tile()
+q97<-"The plot is hard to read because there is too many categories being comparied. I can improve this plot by taking a subset of dest and then faceting."
+```
+
+```{r}
+ggplot(smaller,aes(x=carat,y=price))+
+  geom_point(alpha=1/100)
+```
+
+```{r}
+ggplot(smaller,aes(x=carat,y=price))+
+  geom_bin2d()
+
+ggplot(smaller,aes(x=carat,y=price))+
+  geom_hex()
+
+ggplot(smaller,aes(x=carat,y=price)) +
+  geom_boxplot(aes(group=cut_width(carat,0.1)),varwidth = FALSE)
+```
+
+```{r}
+# Question 98
+q98<-"cut width creates bins based on width specification and cut number creates n number of bins."
+```
+
+```{r}
+# Question 99
+ggplot(diamonds, aes(x = carat, y = price, color = price)) +
+  geom_point(alpha = 0.7) +
+  scale_color_gradient(low = "blue", high = "red") +
+  labs(title = "Distribution of Carat Partitioned by Price",
+       x = "Carat",
+       y = "Price",
+       color = "Price Level")
+
+ggplot(smaller,aes(x=carat,y=price)) +
+  geom_boxplot(aes(group=cut_interval(carat,10)),varwidth = FALSE)
+```
+
+```{r}
+# Question 100
+ggplot(smaller,aes(x=carat,y=price)) +
+  geom_boxplot(aes(group=cut_interval(carat,10)),varwidth = TRUE)
+q100<-"The price distribution of very large diamonds is much larger than smaller diamonds. I believe this is expected since there are a lot less of them compared to the smaller diamonds."
+
+```
 
