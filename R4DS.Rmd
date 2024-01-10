@@ -1793,7 +1793,7 @@ ggplot(smaller,aes(x=carat,y=price))+
   geom_hex()
 
 ggplot(smaller,aes(x=carat,y=price)) +
-  geom_boxplot(aes(group=cut_width(carat,0.1)),varwidth = FALSE)
+  geom_boxplot(aes(group=cut_width(carat,0.1)),varwidth = TRUE)
 ```
 
 ```{r}
@@ -1820,6 +1820,53 @@ ggplot(smaller,aes(x=carat,y=price)) +
 ggplot(smaller,aes(x=carat,y=price)) +
   geom_boxplot(aes(group=cut_interval(carat,10)),varwidth = TRUE)
 q100<-"The price distribution of very large diamonds is much larger than smaller diamonds. I believe this is expected since there are a lot less of them compared to the smaller diamonds."
+```
 
+```{r}
+# Question 101
+ggplot(smaller,aes(x=carat,y=price)) +
+  geom_boxplot(aes(group=cut_interval(carat,10)),varwidth = TRUE)+
+  facet_wrap(~cut)
+```
+
+```{r}
+# Question 102
+diamonds |> 
+  filter(x>=4) |> 
+  ggplot(aes(x=x,y=y))+
+  geom_point()+
+  coord_cartesian(xlim=c(4,11),ylim=c(4,11))
+q102<-"A binned plot is not as good as a scatterplot because we're not able to see outliers like we can see in the plot below. Bin plots are only good at displaying outliers within a single variable."
+```
+
+```{r}
+# Question 103
+ggplot(smaller,aes(x=carat,y=price))+
+  geom_boxplot(aes(group=cut_number(carat,10)))
+q103<-"The advantage of this approach is that we can easily see the distribtion based on the number of observations but it's not clear what the grouping ranges are. "
+```
+
+```{r}
+library(tidymodels)
+
+diamonds <- diamonds |> 
+  mutate(
+    log_price = log(price),
+    log_carat = log(carat)
+  )
+  
+diamonds_fit <- linear_reg() |> 
+  fit(log_price ~ log_carat, data = diamonds)
+
+diamonds_aug <- augment(diamonds_fit, new_data = diamonds) |> 
+  mutate(.resid=exp(.resid))
+
+ggplot(diamonds_aug,aes(x=carat,y=.resid))+
+  geom_point()
+```
+
+```{r}
+ggplot(diamonds_aug,aes(x=cut,y=.resid))+
+  geom_boxplot()
 ```
 
