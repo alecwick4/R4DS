@@ -2284,4 +2284,91 @@ ggplot(df,aes(x,y))+
   scale_fill_viridis_b()+
   labs(title="Viridis, binned",x=NULL,y=NULL)
 ```
+```{r}
+ggplot(mpg,aes(x=displ,y=hwy))+geom_point(aes(color=drv))+
+  geom_smooth()
+
+mpg |> 
+  filter(displ >= 5 & displ <= 6 & hwy >= 10 & hwy <= 25) |> 
+  ggplot(aes(x=displ,y=hwy))+
+  geom_point(aes(color=drv))+
+  geom_smooth()
+
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_point(aes(color=drv))+
+  geom_smooth()+
+  scale_x_continuous(limits=c(5,6))+
+  scale_y_continuous(limits=c(10,25))
+
+ggplot(mpg,aes(x=displ,y=hwy))+
+  geom_point(aes(color=drv))+
+  geom_smooth()+
+  coord_cartesian(xlim=c(5,6),ylim=c(10,25))
+```
+```{r}
+suv <- mpg |> filter(class == "suv")
+compact <- mpg |> filter(class=="compact")
+
+ggplot(suv,aes(x=displ,y=hwy,color=drv))+
+  geom_point()
+
+ggplot(compact,aes(x=displ,y=hwy,color=drv))+
+  geom_point()
+
+x_scale <- scale_x_continuous(limits=range(mpg$displ))
+y_scale <- scale_y_continuous(limits = range(mpg$hwy))
+col_scale <- scale_color_discrete(limits=unique(mpg$drv))
+
+ggplot(suv,aes(x=displ,y=hwy,color=drv))+
+  geom_point()+
+  x_scale+
+  y_scale+
+  col_scale
+
+ggplot(compact,aes(x=displ,y=hwy,color=drv))+
+  geom_point()+
+  x_scale+
+  y_scale+
+  col_scale
+```
+
+```{r}
+# Question 110
+q110<-"The default theme is not changed since the scale that should be used is scale_fill_gradient()"
+df<-tibble(
+  x=rnorm(10000),
+  y=rnorm(10000)
+)
+
+ggplot(df,aes(x,y))+
+  geom_hex()+
+  scale_fill_gradient(low="white",high="red")+
+  coord_fixed()
+```
+
+```{r}
+# Question 111
+q111<-"The first argument to every scale is the asethetic you want to modify. Labs is similar because the first argument is the type of label you want to add."
+```
+
+```{r}
+# Question 112
+presidential |> 
+  mutate(id=33+row_number()) |> 
+  ggplot(aes(x=start,y=id,color=party,label=name)) +
+  geom_point()+
+  geom_segment(aes(xend=end,yend=id))+
+  scale_color_manual(values=c(Republican="#E81B23",Democratic="#00AEF3"))+
+  labs(title="Preidential Timeline",y="President Number",x=NULL,color="Party")+
+  geom_text(hjust = -0.2, size = 2.5,vjust=-1.1)+
+  scale_x_date(breaks = seq(as.Date("1789-01-01"), as.Date("2020-01-01"), by = "4 years"),
+               date_labels = "%Y")
+```
+
+```{r}
+# Question 113
+ggplot(diamonds,aes(x=carat,y=price,color=cut))+
+  geom_point(alpha=1/20)+
+  guides(color = guide_legend(override.aes = list(size = 5,alpha=0.5)))
+```
 
